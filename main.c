@@ -49,7 +49,6 @@ void insert(node *root, int element)
 {
     node *ptr = root;
     node *parent = NULL;
-    int i = 0;
 
     while (ptr != NULL)
     {
