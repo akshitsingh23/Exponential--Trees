@@ -1,41 +1,47 @@
-#include <stdio.h>
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
+typedef struct Node Node;
+struct Node{
+    int level;
+    int count;
+    Node **child;
+    int data[];
+};
 
-
-int binary_search(node *ptr, int element)
-{
-    if (ptr->count == 0) return 0;
-    if (element > ptr->data[ptr->count-1]) return ptr->count;   
+int BinarySearch( Node *ptr,int element){
+    if(element > ptr->data[ptr->count-1]){
+        return ptr->count;
+    }
 
     int start = 0;
     int end = ptr->count - 1;
-    int mid = start + (end - start)/2;
+    int mid = (start + end) / 2;
 
-    while (start < end)
-    {
-        if (element > ptr->data[mid]) 
+    while(start < end){
+        if(element > ptr->data[mid]){
             start = mid + 1;
-        else
+        }
+        else{
             end = mid;
-
-        mid = start + (end - start)/2;
+        }
+        mid = (start + end) / 2;
     }
-
     return mid;
+    
 }
 
-
-node* createNode (const int level)
+Node* createNode (const int level)
 {
     if (level <= 0) return NULL;
 
         /* Allocate node with 2**(level-1) integers */
-    node* pNewNode = (node *) malloc(sizeof(node) + sizeof(int)*(1 << (level - 1))); 
+    Node* pNewNode = (Node *) malloc(sizeof(Node) + sizeof(int)*(1 << (level - 1))); 
     memset(pNewNode->data, 0, sizeof(int) * (1 << (level - 1 )));
 
         /* Allocate 2**level child node pointers */
-    pNewNode->child = (node *) malloc(sizeof(node *) (1 << level));
+    pNewNode->child = (Node **) malloc(sizeof(Node *)* (1 << level));
     memset(pNewNode->child, 0, sizeof(int) * (1 << level));
 
     pNewNode->count = 0;
@@ -44,59 +50,51 @@ node* createNode (const int level)
     return pNewNode;
 }
 
-
-void insert(node *root, int element)
+void Insert(Node *root, int element)
 {
-    node *ptr = root;
-    node *parent = NULL;
+    struct Node* ptr = (struct Node*)malloc(sizeof(struct Node));
+    ptr = root;
+    struct Node* parent = (struct Node*)malloc(sizeof(struct Node));
+    parent = NULL;
+    int i =0;
+    int level,count;
 
-    while (ptr != NULL)
-    {
-        int level = ptr->level;
-        int count = ptr->count;
-        i = binary_search(ptr, element);
+    while(ptr!=NULL){
+        level = ptr->level;
+        count = ptr->count;
+        i = BinarySearch(ptr,element);
 
-        if (count < (1 << (level-1)))
-        {
-            for(int j = count; j >= i+1; --j)
-                ptr->data[j] = ptr->data[j-1];
-
-            ptr->data[i] = element;
-            ++ptr->count;
+        if(count < level){
+            for(int j=count ;j>=i-1;j--){
+                ptr->data[j]=ptr->data[j-1];
+            }
+            ptr->data[i]=element;
+            ptr->count=count + 1;
             return;
         }
-
         parent = ptr;
         ptr = ptr->child[i];
     }
 
     parent->child[i] = createNode(parent->level + 1);
-    insert(parent->child[i], element);    
+    Insert(parent->child[i], element); 
 }
 
 
-void InOrderTrace(node *root)
-{
-    if (root == NULL) return;
+void Inorder_Trace(Node * r){
 
-    for (int i = 0; i < root->count; ++i)
-    {
-        if (root->child[i]) InOrderTrace(root->child[i]);
-        printf ("%d\n", root->data[i]);
+    int count = r->count;
+    for(int i=0;i<count;i++){
+        if(r->child[i]!= NULL){
+            Inorder_Trace(r->child[i]);
+        }
+        printf("%d ",r->data[i]);
+        }
+        if(r->child[count]!= NULL){
+            Inorder_Trace(r->child[count]);
     }
-
-    if (root->child[root->count]) InOrderTrace(root->child[root->count]);
+    return;
 }
-
-
-void testdata (void)
-{
-    node* pRoot = createNode(1);
-
-    for (int i = 0; i < 10000; ++i)
-    {
-        insert(pRoot, rand());
-    }
-
-    InOrderTrace(pRoot);
+int main(){
+    
 }
