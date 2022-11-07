@@ -306,4 +306,5 @@ int main()
     printf("Quick_ time is %f\n", qui_t);
     //printing the time of quick sort algorithm
     fclose(file2);
-}
+}//end of code
+
